@@ -10,6 +10,11 @@ emulator_port          = 5555
 emulator_profile_index = "0"
 player_tag             = "#YOURTAGHERE"
 queue_path             = "instances/instance0/latest_brawler_data.json"
+# discord_bot_token        = ""
+# discord_channel_id       = ""
+# discord_control_user_id  = ""
+# discord_control_guild_id = ""
+
 [instances.instance1]
 name                   = "LDPlayer #1"
 enabled                = true

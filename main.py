@@ -536,10 +536,6 @@ def pyla_main(data):
                     loop.run_until_complete(loop.shutdown_asyncgens())
                     asyncio.set_event_loop(None)
                     loop.close()
-                self.discord_control.notify_channel(
-                    "Bot is stuck: Brawl Stars did not stay in the foreground after recovery. Shutting down.",
-                    screenshot,
-                )
                 print("Bot got stuck. User notified. Shutting down.")
                 self.window_controller.keys_up(list("wasd"))
                 self.window_controller.close()
@@ -1124,10 +1120,6 @@ def pyla_main(data):
         def handle_offline_emulator(self):
             now = time.time()
             if now - self.last_offline_emulator_message > 10:
-                self.discord_control.notify_channel(
-                    f"Emulator ADB offline ({self.instance_id or 'default'}). "
-                    "Waiting to reconnect or trigger an emulator restart."
-                )
                 if self.window_controller.emulator_autorestart:
                     remaining = max(
                         0,
@@ -1397,17 +1389,21 @@ def run_app(instance_name=None):
 
 def run_instance(instance_id):
     from gui.instance_config import apply_instance_overrides, set_active_instance
+    import utils as _utils
 
     set_active_instance(instance_id)
     profile = apply_instance_overrides(instance_id)
     if not profile:
         raise ValueError(f"Unknown multi-instance profile: {instance_id}")
 
+    _orig_clear = _utils.clear_toml_cache
+    def _patched_clear(file_path=None):
+        _orig_clear(file_path)
+        apply_instance_overrides(instance_id)
+    _utils.clear_toml_cache = _patched_clear
+
     instance_name = profile.get("name") or instance_id
-    print(
-        f"Opening GUI for instance '{instance_id}' ({instance_name}) "
-        f"on {profile['emulator']} port {profile['emulator_port']}."
-    )
+    print(f"Opening GUI for instance '{instance_id}' ({instance_name}) on {profile['emulator']} port {profile['emulator_port']}.")
     run_app(instance_name=instance_name)
 
 

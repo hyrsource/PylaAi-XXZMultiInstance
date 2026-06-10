@@ -121,7 +121,8 @@ class DiscordControlServer:
         self.thread.start()
         return True
 
-    def notify_channel(self, message: str, screenshot: Any = None) -> bool:
+
+    def notify_channel(self, message, screenshot=None):
         client = self.client
         loop = self.loop
         if client is None or loop is None or not loop.is_running():
@@ -135,14 +136,14 @@ class DiscordControlServer:
         except ValueError:
             return False
 
-        async def _send() -> None:
+        async def _send():
             channel = client.get_channel(channel_id)
             if channel is None:
                 try:
                     channel = await client.fetch_channel(channel_id)
                 except Exception:
                     return
-            send_kwargs: dict[str, Any] = {"content": message}
+            send_kwargs = {"content": message}
             if screenshot is not None:
                 try:
                     file, _ = _image_to_file(screenshot)

@@ -39,7 +39,7 @@ hypercharge_pixels_minimum = 1800.0
 super_pixels_minimum = 1800.0
 idle_pixels_minimum = 3000.0
 wall_detection_confidence = 0.9
-wall_detection_retry_confidence = 0.20
+wall_detection_retry_confidence = 0.2
 wall_detection_retry_min_objects = 3
 entity_detection_confidence = 0.6
 entity_detection_retry_confidence = 0.35
@@ -72,8 +72,6 @@ combat_dodge_jitter_degrees = 18.0
 lead_shots = "yes"
 aimed_attacks = "no"
 projectile_speed_px_s = 900.0
-
-# Movement tuning
 roam_direction_hold_time = 1.5
 roam_center_bias = 0.25
 retreat_strafe_fraction = 0.5

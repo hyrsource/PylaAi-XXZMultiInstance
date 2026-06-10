@@ -105,38 +105,6 @@ RESULT_LABELS = {
 }
 
 
-def load_instance_discord_settings(instance_id: str | None = None) -> dict[str, Any]:
-    import os
-
-    base = load_webhook_settings()
-    if instance_id is None:
-        instance_id = os.environ.get("PYLA_INSTANCE_ID", "").strip()
-    if not instance_id:
-        return base
-    try:
-        from gui.instance_config import get_instance_profile
-
-        profile = get_instance_profile(instance_id)
-        if not profile:
-            return base
-        token = str(profile.get("discord_bot_token") or "").strip()
-        if token:
-            base["discord_bot_token"] = token
-            base["discord_control_enabled"] = True
-        channel_id = str(profile.get("discord_channel_id") or "").strip()
-        if channel_id:
-            base["discord_control_channel_id"] = channel_id
-        user_id = str(profile.get("discord_control_user_id") or "").strip()
-        if user_id:
-            base["discord_control_user_id"] = user_id
-        guild_id = str(profile.get("discord_control_guild_id") or "").strip()
-        if guild_id:
-            base["discord_control_guild_id"] = guild_id
-    except Exception as exc:
-        print(f"Could not load instance discord settings for '{instance_id}': {exc}")
-    return base
-
-
 def load_webhook_settings() -> dict[str, Any]:
     general_config = load_toml_as_dict("cfg/general_config.toml")
     config_path = DISCORD_CONFIG_PATH
@@ -164,6 +132,36 @@ def load_webhook_settings() -> dict[str, Any]:
     webhook_config["discord_control_channel_id"] = str(webhook_config.get("discord_control_channel_id", "")).strip()
     webhook_config["discord_control_guild_id"] = str(webhook_config.get("discord_control_guild_id", "")).strip()
     return webhook_config
+
+def load_instance_discord_settings(instance_id=None):
+    import os
+    base = load_webhook_settings()
+    if instance_id is None:
+        instance_id = os.environ.get("PYLA_INSTANCE_ID", "").strip()
+    if not instance_id:
+        return base
+    try:
+        from gui.instance_config import get_instance_profile
+        profile = get_instance_profile(instance_id)
+        if not profile:
+            return base
+        token = str(profile.get("discord_bot_token") or "").strip()
+        if token:
+            base["discord_bot_token"] = token
+            base["discord_control_enabled"] = True
+        channel_id = str(profile.get("discord_channel_id") or "").strip()
+        if channel_id:
+            base["discord_control_channel_id"] = channel_id
+        user_id = str(profile.get("discord_control_user_id") or "").strip()
+        if user_id:
+            base["discord_control_user_id"] = user_id
+        guild_id = str(profile.get("discord_control_guild_id") or "").strip()
+        if guild_id:
+            base["discord_control_guild_id"] = guild_id
+    except Exception as exc:
+        print(f"Could not load instance discord settings for '{instance_id}': {exc}")
+    return base
+
 
 
 def _as_int(value, default=0):

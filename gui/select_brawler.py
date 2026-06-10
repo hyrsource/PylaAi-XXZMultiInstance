@@ -885,6 +885,19 @@ class SelectBrawler:
                     best_score = score
             return best_device
 
+        if configured_port:
+            serial = f"127.0.0.1:{configured_port}"
+            try:
+                adb.connect(serial)
+            except Exception:
+                pass
+            for dev in adb.device_list():
+                try:
+                    if dev.serial == serial and dev.get_state() == "device":
+                        return dev
+                except Exception:
+                    pass
+
         devices = online_devices()
         device = choose_device(devices)
         if device:

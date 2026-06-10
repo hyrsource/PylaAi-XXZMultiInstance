@@ -1,6 +1,6 @@
-# PylaAi-XXZMultiInstance
+# PylaAi-XXZ-MultiInstance
 
-PylaAi-XXZMultiInstance is a fork of PylaAi-XXZ focused on providing stable multi-instance support for unattended 24/7 operation.
+PylaAi-XXZ-MultiInstance is a fork of PylaAi-XXZ focused on providing stable multi-instance support for unattended 24/7 use.
 
 ## Installation
 1. Clone or download this repository.
@@ -8,7 +8,7 @@ PylaAi-XXZMultiInstance is a fork of PylaAi-XXZ focused on providing stable mult
 3. Open `multi_instance_add_instance.bat`.
 4. Configure your instances in the GUI.
 5. Make sure you have a Brawl Stars API key if you want automatic player tag and trophy autofill (see below).
-6. Run:
+6. Navigate in the folder and run: (For unattended 24/7 use, since LDPlayer instances may crash, open CMD as Administrator)
 
 ```bash
 python main.py --instance <INSTANCE_ID>
@@ -23,7 +23,7 @@ python main.py --instance <INSTANCE_ID>
 3. Fill in:
 
 ```toml
-player_tag = "#YOURTAG"
+player_tag = `LEAVE THIS ALWAYS BLANK, YOU CAN SETUP YOUR PER-INSTANCE PLAYERTAG FROM `multi_instance_add_instance.bat` OR `cfg/instances.toml`
 developer_email = "YOUR_DEVELOPER_EMAIL"
 developer_password = "YOUR_DEVELOPER_PASSWORD"
 ```

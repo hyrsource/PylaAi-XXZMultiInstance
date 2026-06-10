@@ -122,13 +122,6 @@ class DiscordControlServer:
         return True
 
     def notify_channel(self, message: str, screenshot: Any = None) -> bool:
-        """Send a plain text notification to the configured Discord channel.
-
-        Uses the bot's connection to post directly to the channel set via
-        discord_channel_id (global config or per-instance override).
-        Safe to call from any thread; returns False silently if the bot is not
-        running or no channel is configured.
-        """
         client = self.client
         loop = self.loop
         if client is None or loop is None or not loop.is_running():

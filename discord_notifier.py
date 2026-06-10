@@ -106,17 +106,6 @@ RESULT_LABELS = {
 
 
 def load_instance_discord_settings(instance_id: str | None = None) -> dict[str, Any]:
-    """Load Discord/webhook settings, overlaying per-instance fields from instances.toml.
-
-    Per-instance fields (all optional, set in cfg/instances.toml):
-        discord_bot_token         – enables the control bot for this instance
-        discord_channel_id        – channel for notifications and slash-command restriction
-        discord_control_user_id   – Discord user ID allowed to issue commands
-        discord_control_guild_id  – guild ID for faster slash-command sync
-
-    If an instance has discord_bot_token set, discord_control_enabled is automatically
-    treated as True for that instance regardless of the global discord_config.toml value.
-    """
     import os
 
     base = load_webhook_settings()

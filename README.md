@@ -45,9 +45,9 @@ unless you intentionally want to remove every API key from the developer account
 Email addresses, passwords, and API tokens should always remain blank in the repository.
 
 ## Discord Remote Control
-- Discord Remote Control is supported, **DO NOT** edit global settings for not encountring conflicts, instead setup your bots on multi_instance_add_instance.bat, 1 Bot Per Instance Required!
+- Discord Remote Control is supported, **DO NOT** edit discord global settings for not encountring conflicts, instead setup your bots on multi_instance_add_instance.bat, 1 Bot Per Instance Required!
 ## Telegram Remote Control
-- Telegram Remote Control is supported, you will need a Bot Token (Create on @BotFather) and a Chat ID (Explained Below)
+- Telegram Remote Control is supported,**DO NOT** edit telegram global settings for not encountring conflicts, setup your bots on multi_instance_add_instance.bat,  you will need a Bot Token (Create on @BotFather) and a Chat ID (Explained Below)
 - How to get Chat ID:
 - After creating bot on @BotFather, go to your browser and type:
 `https://api.telegram.org/bot<YourBOTToken>/getUpdates` (Replace `<YourBOTToken>` with the token gave you on @BotFather).

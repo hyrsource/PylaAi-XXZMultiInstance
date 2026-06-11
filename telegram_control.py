@@ -77,7 +77,7 @@ class TelegramControlServer:
     async def _run(self) -> None:
         self.loop = asyncio.get_running_loop()
         self.stop_event = asyncio.Event()
-        print("Telegram control started: /help /status /pause /resume /screenshot /restart_game")
+        print("Telegram control started: /help /status /pause /resume /screenshot /screen /restart_game")
         while not self.stop_event.is_set():
             settings = self.settings_loader()
             token = str(settings.get("bot_token") or "").strip()
@@ -154,7 +154,7 @@ class TelegramControlServer:
         if command == "/status":
             await async_send_message(chat_id, self._status_text(), token=token)
             return
-        if command == "/screenshot":
+        if command in {"/screenshot", "/screen"}:
             await self._send_screenshot(chat_id, token)
             return
         if command in {"/restart_game", "/restart"}:
@@ -173,7 +173,7 @@ class TelegramControlServer:
             "/status - bot status",
             "/pause - pause movement",
             "/resume - resume movement",
-            "/screenshot - send current emulator screenshot",
+            "/screenshot or /screen - send current emulator screenshot",
             "/restart_game - restart Brawl Stars and scrcpy",
         ])
         lines.append("")

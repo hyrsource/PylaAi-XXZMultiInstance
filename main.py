@@ -112,6 +112,7 @@ from state_finder import (
     is_starr_nova_info_screen,
 )
 from telegram_control import TelegramControlServer
+from telegram_notifier import load_instance_telegram_settings
 from time_management import TimeManagement
 from utils import (
     api_base_url,
@@ -420,6 +421,7 @@ def pyla_main(data):
             self.discord_control.start()
             self.telegram_control = TelegramControlServer(
                 self.control_window.state_path,
+                settings_loader=load_instance_telegram_settings,
                 screenshot_provider=self.window_controller.screenshot,
                 restart_game_callback=self.restart_brawl_stars,
                 status_provider=self.telegram_status,

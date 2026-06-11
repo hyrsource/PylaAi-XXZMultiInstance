@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import io
 from pathlib import Path
@@ -133,35 +133,32 @@ def load_webhook_settings() -> dict[str, Any]:
     webhook_config["discord_control_guild_id"] = str(webhook_config.get("discord_control_guild_id", "")).strip()
     return webhook_config
 
-def load_instance_discord_settings(instance_id=None):
-    import os
-    base = load_webhook_settings()
-    if instance_id is None:
-        instance_id = os.environ.get("PYLA_INSTANCE_ID", "").strip()
-    if not instance_id:
-        return base
-    try:
-        from gui.instance_config import get_instance_profile
-        profile = get_instance_profile(instance_id)
-        if not profile:
-            return base
-        token = str(profile.get("discord_bot_token") or "").strip()
-        if token:
-            base["discord_bot_token"] = token
-            base["discord_control_enabled"] = True
-        channel_id = str(profile.get("discord_channel_id") or "").strip()
-        if channel_id:
-            base["discord_control_channel_id"] = channel_id
-        user_id = str(profile.get("discord_control_user_id") or "").strip()
-        if user_id:
-            base["discord_control_user_id"] = user_id
-        guild_id = str(profile.get("discord_control_guild_id") or "").strip()
-        if guild_id:
-            base["discord_control_guild_id"] = guild_id
-    except Exception as exc:
-        print(f"Could not load instance discord settings for '{instance_id}': {exc}")
-    return base
 
+def load_instance_discord_settings() -> dict[str, Any]:
+    import os as _os
+    instance_id = _os.environ.get("PYLA_INSTANCE_ID", "").strip()
+    if not instance_id:
+        return load_webhook_settings()
+    instances_cfg = load_toml_as_dict("cfg/instances.toml")
+    inst = (instances_cfg.get("instances") or {}).get(instance_id) or {}
+    settings = dict(load_webhook_settings())
+    token = str(inst.get("discord_bot_token") or "").strip()
+    if token:
+        settings["discord_bot_token"] = token
+        settings["discord_control_enabled"] = True
+    webhook = normalize_discord_webhook_url(inst.get("webhook_url") or "")
+    if webhook:
+        settings["webhook_url"] = webhook
+    channel = str(inst.get("discord_channel_id") or "").strip()
+    if channel:
+        settings["discord_control_channel_id"] = channel
+    user = str(inst.get("discord_control_user_id") or "").strip().strip("<@!>")
+    if user:
+        settings["discord_control_user_id"] = user
+    guild = str(inst.get("discord_control_guild_id") or "").strip()
+    if guild:
+        settings["discord_control_guild_id"] = guild
+    return settings
 
 
 def _as_int(value, default=0):

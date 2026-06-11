@@ -253,6 +253,7 @@ class HubStateStore:
             "timers": {key: self.time_tresholds.get(key) for key in self.TIMER_FIELDS},
             "history": self._history_state(),
             "instances": self._instances_state(),
+            "multiInstance": self._multi_instance_state(),
         })
         return state
 
@@ -324,6 +325,14 @@ class HubStateStore:
                 "available": [],
                 "error": str(exc),
             }
+
+    def _multi_instance_state(self):
+        import os as _os
+        instance_id = _os.environ.get("PYLA_INSTANCE_ID", "").strip()
+        return {
+            "isWorker": bool(instance_id),
+            "activeInstanceId": instance_id or None,
+        }
 
     def update_config(self, section, key, value):
         if section == "settings":

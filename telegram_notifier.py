@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import os
+
 import io
 import asyncio
 import sys
@@ -76,6 +78,33 @@ def load_telegram_settings() -> dict[str, Any]:
     settings.setdefault("remote_control_enabled", True)
     settings.setdefault("poll_timeout_seconds", 25)
     return settings
+
+def load_instance_telegram_settings() -> dict[str, Any]:
+    instance_id = os.environ.get("PYLA_INSTANCE_ID", "").strip()
+    if not instance_id:
+        return load_telegram_settings()
+    inst_cfg = f"cfg/instances/{instance_id}/telegram_config.toml"
+    if Path(resolve_project_path(inst_cfg)).exists():
+        settings = dict(load_telegram_settings())
+        settings.update(load_toml_as_dict(inst_cfg))
+        settings["bot_token"] = str(settings.get("bot_token", "")).strip()
+        settings["notification_chat_ids"] = _as_chat_ids(settings.get("notification_chat_ids"))
+        settings["allowed_chat_ids"] = _as_chat_ids(settings.get("allowed_chat_ids"))
+        return settings
+    instances_cfg = load_toml_as_dict("cfg/instances.toml")
+    inst = (instances_cfg.get("instances") or {}).get(instance_id) or {}
+    token = str(inst.get("telegram_bot_token") or "").strip()
+    if token:
+        settings = dict(load_telegram_settings())
+        settings["bot_token"] = token
+        settings["enabled"] = True
+        settings["remote_control_enabled"] = True
+        chat_id = str(inst.get("telegram_notification_chat_id") or "").strip()
+        if chat_id:
+            settings["notification_chat_ids"] = _as_chat_ids(chat_id)
+            settings["allowed_chat_ids"] = _as_chat_ids(chat_id)
+        return settings
+    return load_telegram_settings()
 
 
 def load_known_chat_ids() -> list[str]:

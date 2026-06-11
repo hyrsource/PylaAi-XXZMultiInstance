@@ -1,6 +1,6 @@
-# PylaAi-XXZ-MultiInstance
+# Pyla-MultiInstance
 
-PylaAi-XXZ-MultiInstance is a fork of PylaAi-XXZ focused on providing stable multi-instance support for unattended 24/7 use.
+Pyla-MultiInstance is a fork of PylaAi-XXZ focused on providing stable multi-instance support for unattended 24/7 use.
 
 ## Installation
 1. Clone or download this repository.
@@ -8,12 +8,7 @@ PylaAi-XXZ-MultiInstance is a fork of PylaAi-XXZ focused on providing stable mul
 3. Open `multi_instance_add_instance.bat`.
 4. Configure your instances in the GUI.
 5. Make sure you have a Brawl Stars API key if you want automatic player tag and trophy autofill (see below).
-6. Navigate in the folder and run: (For unattended 24/7 use, since LDPlayer instances may crash, open CMD as Administrator)
-
-```bash
-python main.py --instance <INSTANCE_ID>
-```
-
+6. Double-Click or Open as administrator (Recommended since if instances crash it recoveries) multi_instance_start.bat
 7. Press **START**, select your brawlers, or use **Push All 1k**.
 
 ## Brawl Stars API Trophy Autofill
@@ -50,10 +45,14 @@ unless you intentionally want to remove every API key from the developer account
 Email addresses, passwords, and API tokens should always remain blank in the repository.
 
 ## Discord Remote Control
-- Discord Remote Control is supported, you need one discord bot for each instance
+- Discord Remote Control is supported, **DO NOT** edit global settings for not encountring conflicts, instead setup your bots on multi_instance_add_instance.bat, 1 Bot Per Instance Required!
 ## Telegram Remote Control
-- Telegram Remote Control is currently not supported in this version
-
+- Telegram Remote Control is supported, you will need a Bot Token (Create on @BotFather) and a Chat ID (Explained Below)
+- How to get Chat ID:
+- After creating bot on @BotFather, go to your browser and type:
+`https://api.telegram.org/bot<YourBOTToken>/getUpdates` (Replace `<YourBOTToken>` with the token gave you on @BotFather).
+- You will se something like ok : true, now send a message to your bot and reload the page.
+- Now look for chat object in JSON response, the number inside the `id` field is your Chat ID.
 ## Developers
 
 * Iyordanov

@@ -12,7 +12,25 @@ MILESTONE_STEP = 100
 class TrophyObserver:
 
     def __init__(self, brawler_list):
-        self.history_file = "./cfg/match_history.toml"
+        _inst_id = os.environ.get("PYLA_INSTANCE_ID", "").strip()
+        if _inst_id:
+            _inst_dir = os.path.join("cfg", "instances", _inst_id)
+            os.makedirs(_inst_dir, exist_ok=True)
+            self.history_file = os.path.join(_inst_dir, "match_history.toml")
+        else:
+            _inst_id = os.environ.get("PYLA_INSTANCE_ID", "").strip()
+        if _inst_id:
+            _inst_dir = os.path.join("cfg", "instances", _inst_id)
+            os.makedirs(_inst_dir, exist_ok=True)
+            self.history_file = os.path.join(_inst_dir, "match_history.toml")
+        else:
+            _inst_id = os.environ.get("PYLA_INSTANCE_ID", "").strip()
+        if _inst_id:
+            _inst_dir = os.path.join("cfg", "instances", _inst_id)
+            os.makedirs(_inst_dir, exist_ok=True)
+            self.history_file = os.path.join(_inst_dir, "match_history.toml")
+        else:
+            self.history_file = "./cfg/match_history.toml"
         self.current_trophies = None
         self.current_wins = None
         self.match_history = self.load_history(brawler_list)
@@ -65,7 +83,10 @@ class TrophyObserver:
         self._milestone_anchor_trophies = {}
         self._milestone_anchor_time = {}
         os.makedirs(TROPHY_LOG_DIR, exist_ok=True)
-        self._trophy_log_path = os.path.join(TROPHY_LOG_DIR, TROPHY_LOG_FILE)
+        if _inst_id:
+            self._trophy_log_path = os.path.join(TROPHY_LOG_DIR, f"trophies_{_inst_id}.log")
+        else:
+            self._trophy_log_path = os.path.join(TROPHY_LOG_DIR, TROPHY_LOG_FILE)
 
     def win_streak_gain(self):
         return max(0, min(self.win_streak - 1, 10)) if self.current_trophies < 2000 else 0

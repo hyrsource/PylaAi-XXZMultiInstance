@@ -692,6 +692,33 @@ ApplicationWindow {
         }
     }
 
+    component InstanceBanner: Rectangle {
+        visible: root.hubState.multiInstance !== undefined && root.hubState.multiInstance.isWorker
+        Layout.fillWidth: true
+        height: visible ? 34 : 0
+        radius: 6
+        color: theme.accentSoft
+        border.color: theme.accentBorder
+        border.width: 1
+        Row {
+            anchors.centerIn: parent
+            spacing: 6
+            Text {
+                text: "Instance:"
+                color: theme.accent
+                font.pixelSize: 11
+                font.bold: true
+                anchors.verticalCenter: parent.verticalCenter
+            }
+            Text {
+                text: root.hubState.multiInstance ? (root.hubState.multiInstance.activeInstanceId || "") : ""
+                color: theme.text
+                font.pixelSize: 11
+                anchors.verticalCenter: parent.verticalCenter
+            }
+        }
+    }
+
     Rectangle {
         anchors.fill: parent
         color: theme.bg
@@ -971,6 +998,7 @@ ApplicationWindow {
 
                 TabPage {
                     visible: root.activeTab === "Discord"
+                    InstanceBanner {}
                     FormPanel {
                         title: "DISCORD NOTIFICATIONS"
                         FieldRow { label: "Webhook URL"; ConfigInput { anchors.fill: parent; value: String(root.value("discord", "webhook_url")); secret: true; onSaved: function(value) { root.saveValue("discord", "webhook_url", value) } } }
@@ -1001,6 +1029,7 @@ ApplicationWindow {
 
                 TabPage {
                     visible: root.activeTab === "Telegram"
+                    InstanceBanner {}
                     FormPanel {
                         title: "TELEGRAM BOT"
                         FieldRow { label: "Enable Telegram"; CenterRow { ToggleSwitch { checked: root.boolValue("telegram", "enabled"); onToggled: function(value) { root.saveValue("telegram", "enabled", value) } } } }
@@ -1022,6 +1051,7 @@ ApplicationWindow {
 
                 TabPage {
                     visible: root.activeTab === "API"
+                    InstanceBanner {}
                     FormPanel {
                         title: "BRAWL STARS API"
                         FieldRow { label: "Player Tag"; ConfigInput { anchors.fill: parent; value: String(root.value("api", "player_tag")); onSaved: function(value) { root.saveValue("api", "player_tag", value) } } }
@@ -1221,6 +1251,7 @@ ApplicationWindow {
 
                 TabPage {
                     visible: root.activeTab === "Match History"
+                    InstanceBanner {}
                     Flow {
                         Layout.fillWidth: true
                         spacing: 12

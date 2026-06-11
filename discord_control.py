@@ -11,7 +11,7 @@ from discord import app_commands
 
 from runtime_control import PAUSED, RUNNING, read_state, write_state
 from utils import _config_bool
-from discord_notifier import _image_to_file, load_instance_discord_settings, load_webhook_settings
+from discord_notifier import _image_to_file, load_webhook_settings
 
 
 def _clean_id(value: Any) -> str:
@@ -121,45 +121,6 @@ class DiscordControlServer:
         self.thread.start()
         return True
 
-
-    def notify_channel(self, message, screenshot=None):
-        client = self.client
-        loop = self.loop
-        if client is None or loop is None or not loop.is_running():
-            return False
-        settings = self.settings_loader()
-        channel_id_str = str(settings.get("discord_control_channel_id") or "").strip()
-        if not channel_id_str:
-            return False
-        try:
-            channel_id = int(channel_id_str)
-        except ValueError:
-            return False
-
-        async def _send():
-            channel = client.get_channel(channel_id)
-            if channel is None:
-                try:
-                    channel = await client.fetch_channel(channel_id)
-                except Exception:
-                    return
-            send_kwargs = {"content": message}
-            if screenshot is not None:
-                try:
-                    file, _ = _image_to_file(screenshot)
-                    if file is not None:
-                        send_kwargs["file"] = file
-                except Exception:
-                    pass
-            await channel.send(**send_kwargs)
-
-        try:
-            asyncio.run_coroutine_threadsafe(_send(), loop).result(timeout=8)
-            return True
-        except Exception as exc:
-            print(f"Discord channel notify failed: {exc}")
-            return False
-
     def close(self) -> None:
         client = self.client
         loop = self.loop
@@ -214,10 +175,26 @@ class DiscordControlServer:
                 return
             await _ack(interaction)
             set_runtime_state(self.state_path, paused=True)
-            await _followup(interaction, "PylaAi-XXZ paused. Use /start to resume.")
+            await _followup(interaction, "PylaAi-XXZ paused. Use /start or /resume to continue.")
+
+        @tree.command(name="pause", description="Pause PylaAi-XXZ.")
+        async def pause_command(interaction: discord.Interaction) -> None:
+            if not await _guard(interaction):
+                return
+            await _ack(interaction)
+            set_runtime_state(self.state_path, paused=True)
+            await _followup(interaction, "PylaAi-XXZ paused. Use /start or /resume to continue.")
 
         @tree.command(name="start", description="Resume PylaAi-XXZ.")
         async def start_command(interaction: discord.Interaction) -> None:
+            if not await _guard(interaction):
+                return
+            await _ack(interaction)
+            set_runtime_state(self.state_path, paused=False)
+            await _followup(interaction, "PylaAi-XXZ resumed.")
+
+        @tree.command(name="resume", description="Resume PylaAi-XXZ.")
+        async def resume_command(interaction: discord.Interaction) -> None:
             if not await _guard(interaction):
                 return
             await _ack(interaction)
@@ -234,6 +211,25 @@ class DiscordControlServer:
 
         @tree.command(name="screenshot", description="Send the current emulator screenshot.")
         async def screenshot_command(interaction: discord.Interaction) -> None:
+            if not await _guard(interaction):
+                return
+            await _ack(interaction)
+            if self.screenshot_provider is None:
+                await _followup(interaction, "Screenshot is not available in this process.")
+                return
+            try:
+                screenshot = await asyncio.to_thread(self.screenshot_provider)
+                file, _image_url = _image_to_file(screenshot)
+            except Exception as exc:
+                await _followup(interaction, f"Could not capture screenshot: {exc}")
+                return
+            if file is None:
+                await _followup(interaction, "Could not send screenshot.")
+                return
+            await _followup(interaction, "Current emulator screenshot.", file=file)
+
+        @tree.command(name="screen", description="Send the current emulator screenshot (alias for /screenshot).")
+        async def screen_command(interaction: discord.Interaction) -> None:
             if not await _guard(interaction):
                 return
             await _ack(interaction)
@@ -322,13 +318,13 @@ class DiscordControlServer:
                     await tree.sync(guild=guild)
                     print(
                         f"Discord control commands synced for guild {guild_id}: "
-                        "/start /stop /status /screenshot /restart_game /restart_scrcpy /restart_emulator /back /press"
+                        "/start /stop /pause /resume /status /screenshot /screen /restart_game /restart_scrcpy /restart_emulator /back /press"
                     )
                 else:
                     await tree.sync()
                     print(
                         "Discord control commands synced globally: "
-                        "/start /stop /status /screenshot /restart_game /restart_scrcpy /restart_emulator /back /press"
+                        "/start /stop /pause /resume /status /screenshot /screen /restart_game /restart_scrcpy /restart_emulator /back /press"
                     )
                 synced = True
             except Exception as exc:
